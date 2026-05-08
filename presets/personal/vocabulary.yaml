@@ -1,0 +1,27 @@
+# Vocabulary substitution for personal vaults.
+
+note: memory
+moc: life-area-map
+domain_moc: life-area-map
+source: ""                  # personal vaults rarely have external sources
+process: capture
+maintain: anneal
+
+# Folders
+notes_root: notes
+inbox: inbox
+archive: archive
+sessions: sessions
+self: self                  # identity, goals, values
+
+# Frontmatter terms
+confidence_levels:
+  - vivid
+  - clear
+  - hazy
+  - reconstructed
+evidence_types:
+  - direct-experience
+  - witnessed
+  - reported
+  - inferred

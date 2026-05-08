@@ -1,0 +1,32 @@
+# Vocabulary substitution for research vaults.
+# CLAUDE.md.template uses {VOCAB:key} placeholders that get replaced at /init time.
+
+note: claim
+moc: topic-map
+domain_moc: domain-map
+source: paper
+process: extract
+maintain: anneal
+
+# Folders
+notes_root: notes
+inbox: inbox
+archive: archive
+sessions: sessions
+references_folder: notes/papers
+methods_folder: notes/methods
+topics_folder: notes
+domains_folder: notes
+
+# Frontmatter terms
+confidence_levels:
+  - established
+  - probable
+  - speculative
+  - contested
+evidence_types:
+  - experimental
+  - observational
+  - computational
+  - theoretical
+  - meta-analysis

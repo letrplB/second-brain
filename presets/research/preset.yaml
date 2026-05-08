@@ -1,0 +1,34 @@
+name: research
+description: For research vaults. Atomic claims with strong cross-linking, evidence-typed, paper-sourced.
+
+# Configuration dimensions (0..1 scalars; sensible defaults — adjustable per vault)
+dimensions:
+  atomicity: 0.85
+  organization: 0.30
+  linking: 0.70
+  processing: 0.70
+  navigation: 3-tier        # hub → domain → topic → leaf
+  schema: dense
+  automation: minimal       # /anneal commits explicitly; no hooks
+
+# Whether to include a self/ directory for identity/goals
+self_space: false           # research vaults keep goals.md at vault root
+
+# Default tooling
+qmd:
+  enabled: true             # qmd MCP for semantic search
+  collection: ${VAULT_NAME}
+
+# Note types this preset uses
+note_types:
+  - claim
+  - paper
+  - method
+  - topic-map               # _topic.md
+  - domain-map              # _domain.md
+  - index                   # index.md (root hub)
+
+# Default starter MOC structure
+starter_mocs:
+  - index
+  - _domain (placeholder; user renames at /init time)

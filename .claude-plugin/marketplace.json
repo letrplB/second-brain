@@ -1,0 +1,33 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "second-brain",
+  "owner": {
+    "name": "bastian beitzinger"
+  },
+  "metadata": {
+    "description": "Personal knowledge graph plugin: atomic claims, walked natively by LLMs as semantic engines.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "second-brain",
+      "description": "Seven verbs over a flat notes folder: extract, connect, walk, audit, learn, init, anneal. No queues, no phase machines, no invisible hooks.",
+      "version": "0.1.0",
+      "source": "./",
+      "strict": false,
+      "author": {
+        "name": "bastian beitzinger"
+      },
+      "license": "MIT",
+      "keywords": [
+        "knowledge-management",
+        "tools-for-thought",
+        "knowledge-graph",
+        "second-brain",
+        "atomic-notes",
+        "agent-native"
+      ],
+      "category": "productivity"
+    }
+  ]
+}

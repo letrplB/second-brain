@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Python (used by skills/audit/tools/schema-check.py and skills/walk/tools/topology.py)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Editors
+*.swp
+*.swo
+.idea/
+.vscode/
+.zed/
+
+# Secrets — defensive, no current uses
+.env
+.env.*
+!.env.example
+
+# OS / shell
+*.bak
+*~

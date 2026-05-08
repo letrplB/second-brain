@@ -1,0 +1,17 @@
+{
+  "name": "second-brain",
+  "version": "0.1.0",
+  "description": "A graph of atomic claims that LLMs walk natively as semantic engines. Seven verbs over a flat notes folder. No queues, no phase machines, no invisible hooks.",
+  "author": {
+    "name": "bastian beitzinger"
+  },
+  "license": "MIT",
+  "keywords": [
+    "knowledge-management",
+    "tools-for-thought",
+    "knowledge-graph",
+    "second-brain",
+    "atomic-notes",
+    "agent-native"
+  ]
+}
