@@ -95,9 +95,15 @@ The answers populate the `active_threads:` list in `goals.md` (real content, not
 
 **Q7 — assistant preferences?**
 
-> "Anything you want the assistant to consistently flag, skip, or treat differently in this vault?"
+> "Anything you want the assistant to consistently flag, skip, or treat differently in this vault? Some examples to start from (pick any, override, or write your own):
+> - 'Surface connections I haven't seen — especially across domains.'
+> - 'Challenge my assumptions before agreeing.'
+> - 'Answer from the vault first, fall back to general knowledge only when explicit.'
+> - 'Flag when I contradict myself across claims.'
+> - 'Mark inferences as inferences; don't assert profile-extrapolation as fact.'
+> - 'Be direct. Skip closing pleasantries.'"
 
-Free-text answer becomes a `## Preferences` section appended to the generated `CLAUDE.md`. The model reads it on every session start.
+The example list is from the *Vault That Adds To You* framing — the highest-leverage preferences are the ones that make the vault talk back, not just nod along. Free-text answer becomes a `## Preferences` section appended to the generated `vault.md` (via the `{PREFERENCES_BLOCK}` placeholder). The model reads it on every session start.
 
 ### The review-and-confirm step
 
@@ -166,18 +172,24 @@ Quick mode is silent — no prompts, no questions. Suitable for scripting, testi
    ├── archive/
    ├── sessions/
    ├── self/                       (only if preset/answer says yes)
-   ├── CLAUDE.md
-   ├── vault.yaml
+   ├── CLAUDE.md                   (thin — session-start instructions only)
+   ├── vault.md                    (the vault contract: atom shape, verbs, conventions)
+   ├── vault.yaml                  (runtime config)
    └── goals.md                    (research) or self/goals.md (personal)
    ```
 4. **Write `vault.yaml`** with the resolved values (preset, domain, vocabulary, qmd config, git config, created date).
-5. **Generate `CLAUDE.md`** by reading the preset's `CLAUDE.md.template` and substituting placeholders:
+5. **Generate `CLAUDE.md`** (thin) and **`vault.md`** (full contract) from the preset's templates. Both substitute the same placeholders:
    - `{VAULT_NAME}` → vault root basename
    - `{DOMAIN}` → resolved domain slug
    - `{PLUGIN_ROOT}` → absolute plugin path
    - `{DATE}` → today
    - `{VOCAB:key}` → from the resolved vocabulary
-   - In guided mode, append the `## Preferences` section from Q7 if the user provided any.
+   - `{PREFERENCES_BLOCK}` (in vault.md only) → in guided mode replaced with a `## Preferences` section from Q7; in quick mode replaced with empty string
+
+   **Parent-CLAUDE.md detection.** Before writing `CLAUDE.md`, check whether a `CLAUDE.md` exists at the vault root's parent directory. If yes, surface this fact to the user with options:
+   - **standalone** (default): write `<vault>/CLAUDE.md` as usual; both load via Claude Code's hierarchical CLAUDE.md reading
+   - **additive**: append a clearly-bounded `## second-brain vault: <vault-name>` section to the parent's CLAUDE.md, skip writing `<vault>/CLAUDE.md`
+   - In quick mode, default to standalone with no prompt.
 6. **Copy starter files.** From `<plugin>/presets/<preset>/starter/` into the vault root, applying the same substitutions.
 7. **Create starter MOCs** (guided mode only). For each topic from Q3: write `notes/_<kebab-case-slug>.md` from `reference/templates/topic-map.md`, with `description` and `scope` sketched from the topic name (a single sensible sentence; user edits later).
 8. **Populate `goals.md`** (guided mode only). YAML head's `active_threads:` filled from Q6; body left as scaffold prose.

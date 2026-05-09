@@ -1,123 +1,16 @@
-# {VAULT_NAME} — second-brain research vault
+# {VAULT_NAME} — second-brain vault
 
-This is a second-brain research vault for {DOMAIN}. The graph is in `notes/`. Atoms are **claims** (one prose proposition per file). Bodies are 150–400 words with inline `[[wikilinks]]` carrying surrounding prose. Frontmatter is the contract; the `description` field is the first triage signal when following a link.
+> This block is the second-brain vault context. It can stand alone in this directory, or be merged into a parent CLAUDE.md by copy-pasting the section below.
 
 ## On every session start
 
-Read `goals.md` and surface a one-line orientation: active threads, inbox count, recent work. This is **the** way you orient — there is no hook doing it for you.
+1. Read `vault.md` for the atom contract, walking conventions, and verb specs.
+2. Read `goals.md` for active threads.
+3. Glance at `inbox/` (count) and `notes/claims/` (last ~10 by mtime).
+4. Surface a one-line orientation: "active threads: X, Y. Inbox: N. Recent: Z."
 
-```
-1. Read goals.md
-2. Glance at inbox/ (count files)
-3. Glance at notes/claims/ — last ~10 by mtime
-4. Print: "active threads: X, Y. Inbox: N. Recent: Z."
-```
+If `goals.md` looks stale (no progress >7 days), say so.
 
-If anything in `goals.md` is stale (more than 7 days old without progress), say so.
+## What this directory is
 
-## The verbs
-
-| Verb | What |
-|---|---|
-| `/extract <source>` | mechanical: source → atomic claim notes in `notes/claims/`. No connection or audit. |
-| `/connect <note>` | wire a note into the graph: forward + backward `[[wikilinks]]`, MOC membership. |
-| `/walk <query>` | semantic + topology query. Returns ranked claims, papers, methods. |
-| `/audit <note>` | schema + link + cold-read quality check. `--vault` for whole vault. |
-| `/learn <source>` | full ingestion: extract → connect → audit. `--deep` parallelises per-claim. |
-| `/anneal --scope=...` | methodology coach pass; flag drift, suggest fixes, optionally commit. |
-| `/init` | scaffold a new vault. (Used once.) |
-
-Composition is implicit: when you `/learn`, the model orchestrates extract → connect → audit. When you `/extract` alone, only mechanical extraction happens.
-
-## Atom contract
-
-A **claim note** lives at `notes/claims/<kebab-case-prose-proposition>.md`. Filename = title (no separate title field needed unless you want to override). Frontmatter:
-
-```yaml
----
-description: "≤200 char one-liner adding non-title context"
-type: claim
-confidence: established | probable | speculative | contested
-created: YYYY-MM-DD
-source: "[[paper-or-source-wikilink]]"
-evidence_type: experimental | observational | computational | theoretical | meta-analysis
-supports: ["[[other-claim]]", ...]
-contradicts: ["[[other-claim]]", ...]
-methods: ["[[method-note]]", ...]
-tags: [domain-tag, topic-tag, ...]
----
-```
-
-A **paper note** lives at `notes/papers/<kebab-case-title-or-slug>.md`. Frontmatter:
-
-```yaml
----
-description: "What the paper argues / what was novel about it / what it's good for"
-type: paper
-authors: [...]
-year: YYYY
-doi: "10.xxx/yyy"
-venue: "journal or platform"
-read_date: YYYY-MM-DD
-claims: ["[[claim-1]]", ...]
-tags: [...]
----
-```
-
-A **method note** lives at `notes/methods/<kebab-case-method-name>.md`. Frontmatter:
-
-```yaml
----
-description: "What the method does, when it's used, what it costs"
-type: method
-method_type: characterization | synthesis | analysis | experimental | computational
-used_in: ["[[paper]]", ...]
-domain_fit: [domain-tag, ...]
-lessons:
-  - "Concise lesson 1"
-tags: [...]
----
-```
-
-A **topic map** lives at `notes/_<topic>.md` (leading underscore). Frontmatter:
-
-```yaml
----
-description: "What this topic covers"
-type: topic-map
-parent_map: "[[_<parent-domain>]] or [[index]]"
-scope: "What this map covers in one sentence"
----
-```
-
-## Walking conventions
-
-- **Inline wikilinks have surrounding prose.** Not `[[a]] [[b]] [[c]]`. Yes: `Confidence holds up [[because the linear-probe results survive across architectures]] but only [[for representations with a single dominant axis]].`
-- **Bidirectional links.** Every claim ends with a `## Topics` section listing the MOCs it belongs to. Every MOC has a `## Core claims` section listing its members. `/connect` keeps these in sync.
-- **Title = filename = kebab-case prose proposition.** Not topic labels. `cognitive-surrender-is-path-dependent.md`, not `surrender.md`.
-- **Description ≠ summary.** Layer: heuristic, then mechanism, then implication.
-- **Body 150–400 words.** Shorter = lift the field. Longer = split.
-
-## Subagent policy
-
-Default: inline. Spawn a subagent only when:
-- `/learn --deep` (one subagent per claim, end-to-end — extract+connect+audit per claim, isolated context)
-- `/walk` would return 50+ candidates (spawn a filterer)
-- `/audit --vault` (spawn a fresh-context inspector)
-
-The unit of context isolation is the claim, not the phase. Never spawn a subagent for "just one phase of one claim" — that's the failure mode the inline-first stance exists to avoid.
-
-## What this vault is NOT
-
-A queue. A pipeline. A state machine. A finite set of phases. The graph is the only state.
-
-## Reference
-
-- `${PLUGIN_ROOT}/CHARTER.md` — design principles
-- `${PLUGIN_ROOT}/reference/methodology.md` — core editorial conventions
-- `${PLUGIN_ROOT}/reference/empirical-grounding/` — ~60 PKM/cognition notes, consulted on demand
-- `${PLUGIN_ROOT}/reference/templates/` — note frontmatter templates
-
-## When in doubt
-
-Read the charter. Then write a note.
+A graph of atomic claims. Verbs: `/extract`, `/connect`, `/walk`, `/audit`, `/learn`, `/anneal`, `/init`. Future: `/dream`. Full contract and conventions in `vault.md`.

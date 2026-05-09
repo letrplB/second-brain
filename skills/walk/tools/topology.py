@@ -11,6 +11,7 @@ Usage:
   topology.py bridges <topic>
   topology.py neighbors <claim-slug> [--depth N]
   topology.py moc-coverage
+  topology.py moc-density [--threshold N]
 
 Run from the vault root (the directory containing notes/).
 
@@ -31,6 +32,24 @@ FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 def slug_of(path: Path, vault_root: Path) -> str:
     """Filename without extension, used as the canonical node id."""
     return path.stem
+
+
+def normalize_target(target: str) -> str:
+    """Normalize a wikilink target (prose-with-spaces or already-slug) to canonical lowercase-kebab form for lookup.
+
+    Filenames in the vault use kebab-case but may preserve some uppercase (e.g. acronyms like cryo-ET).
+    Wikilinks in note bodies sometimes use prose form ('cognitive surrender is path-dependent...').
+    This function lowercases + collapses whitespace to single hyphen + strips non-alphanumeric (except hyphens),
+    producing a stable lookup key.
+    """
+    target = target.strip().lower()
+    # Common transliterations used in filenames (e.g. SPION@MSN → spion-at-msn)
+    target = target.replace("@", "-at-")
+    target = target.replace("&", "-and-")
+    target = re.sub(r"\s+", "-", target)
+    target = re.sub(r"[^a-z0-9-]", "", target)
+    target = re.sub(r"-+", "-", target).strip("-")
+    return target
 
 
 def parse_frontmatter(text: str) -> dict:
@@ -78,17 +97,29 @@ def build_graph(vault_root: Path) -> tuple[dict, dict]:
 
     nodes_by_slug: {slug: {path, frontmatter, body}}
     adjacency: {slug: set(neighbour_slugs)} (undirected for centrality, separate-tracked for direction if needed)
+
+    Wikilink targets are resolved against actual filenames: a prose-form `[[cognitive surrender is path-dependent...]]`
+    is normalized and looked up against the kebab-case file slug. If no real file matches, the raw target is kept
+    (it'll be a phantom edge — useful for diagnosing dangling links).
     """
     nodes: dict = {}
     adj: dict = defaultdict(set)
-    for path in discover_notes(vault_root):
+    paths = list(discover_notes(vault_root))
+    real_slugs = {p.stem for p in paths}
+    norm_to_real = {normalize_target(s): s for s in real_slugs}
+
+    for path in paths:
         text = path.read_text(encoding="utf-8", errors="replace")
         fm = parse_frontmatter(text)
         body = FRONTMATTER_RE.sub("", text, count=1)
         slug = slug_of(path, vault_root)
         nodes[slug] = {"path": path, "frontmatter": fm, "body": body}
         for m in WIKILINK_RE.finditer(text):
-            target = m.group(1).strip()
+            raw = m.group(1).strip()
+            if raw in real_slugs:
+                target = raw
+            else:
+                target = norm_to_real.get(normalize_target(raw), raw)
             if target == slug:
                 continue
             adj[slug].add(target)
@@ -181,6 +212,143 @@ def cmd_moc_coverage(nodes: dict, adj: dict) -> None:
         print(f"  {s} — {desc[:120]}")
 
 
+def cmd_moc_density(nodes: dict, adj: dict, threshold: int) -> None:
+    """For every topic-MOC, compute a paired observable: member count + internal-edge density.
+
+    The single-axis rule "split MOCs above N claims" can't tell apart three flavours of crowded:
+      1. cocktail party (sparse internal links — split candidate)
+      2. working group / maturation chamber (claims cross-pressuring each other — splitting kills convergence)
+      3. programme-organising thesis (dense links to a generative central claim)
+
+    Internal-edge density distinguishes (1) from (2)+(3). The verdict combines both observables.
+    Per-MOC isolated-member list is the optional extension: claims sitting in a MOC tag but not
+    epistemically connected to siblings — split candidates regardless of MOC-level density.
+    """
+    moc_rows = []
+    isolated_lists: dict = {}
+    # Members of a MOC's density chamber are only the units that *organise* there:
+    # claims, synthesis, memories. Papers and methods are referenced from a MOC
+    # (often in their own subsections) but aren't themselves units of cross-pressure.
+    DENSITY_MEMBER_TYPES = {"claim", "synthesis", "memory"}
+    for slug, info in nodes.items():
+        fm = info["frontmatter"]
+        is_moc = slug.startswith("_") or fm.get("type") in {"topic-map", "domain-map", "life-area-map", "index"}
+        if not is_moc:
+            continue
+        # members: only typed claim/synthesis/memory neighbours that resolve to a real file
+        members = []
+        for n in adj.get(slug, ()):
+            if n not in nodes:
+                continue
+            if n.startswith("_") or n == slug:
+                continue
+            ntype = nodes[n]["frontmatter"].get("type", "")
+            if ntype not in DENSITY_MEMBER_TYPES:
+                continue
+            members.append(n)
+        member_count = len(members)
+        if member_count == 0:
+            moc_rows.append((slug, 0, 0, 0.0, 0, 0.0, "empty"))
+            continue
+        member_set = set(members)
+        internal_degree = {m: 0 for m in members}
+        internal_edges = 0
+        for m in members:
+            for nb in adj.get(m, ()):
+                if nb in member_set and nb != m:
+                    internal_degree[m] += 1
+                    if m < nb:
+                        internal_edges += 1
+        mean_internal_degree = sum(internal_degree.values()) / member_count
+        isolated = sorted([m for m, d in internal_degree.items() if d == 0])
+        isolation_count = len(isolated)
+        non_isolated_pct = 100.0 * (member_count - isolation_count) / member_count
+        if member_count < 3:
+            verdict = "small"
+        elif member_count > threshold and mean_internal_degree < 1.0:
+            verdict = "split-candidate"
+        elif member_count > threshold:
+            verdict = "productive-crowd"
+        else:
+            verdict = "ok"
+        moc_rows.append((slug, member_count, internal_edges, mean_internal_degree, isolation_count, non_isolated_pct, verdict))
+        if isolated:
+            isolated_lists[slug] = isolated
+
+    moc_rows.sort(key=lambda r: -r[1])
+    print(f"MOC density report (threshold={threshold}):")
+    print()
+    print(f"  {'MOC':<48} {'cnt':>4} {'edges':>5} {'meanDeg':>8} {'isol':>4} {'non-iso%':>8}  verdict")
+    print("  " + "-" * 96)
+    for slug, count, edges, mean_deg, isol_n, non_iso_pct, verdict in moc_rows:
+        print(f"  {slug:<48} {count:>4} {edges:>5} {mean_deg:>8.2f} {isol_n:>4} {non_iso_pct:>7.1f}%  {verdict}")
+    print()
+    if isolated_lists:
+        print("Isolated members (claims listed in a MOC with zero links to siblings in the same MOC):")
+        for slug in sorted(isolated_lists, key=lambda s: -len(isolated_lists[s])):
+            members = isolated_lists[slug]
+            print(f"  {slug} ({len(members)} isolated):")
+            for m in members[:10]:
+                print(f"    - {m}")
+            if len(members) > 10:
+                print(f"    ... +{len(members) - 10} more")
+    else:
+        print("No isolated members across any MOC.")
+
+
+def cmd_leverage(nodes: dict, adj: dict, slug: str) -> None:
+    """Generative-leverage score for a claim: how many other claims/MOCs depend
+    on or organise around this one. From the claim->fact-gradient essay's caveat
+    that programme-organising claims may resist factual status while shaping
+    decades of work — this metric surfaces them mechanically.
+
+    Components:
+      - inbound `supports:` references (other claims that lean on this)
+      - inbound `[[wikilink]]` mentions in MOC bodies (MOC memberships)
+      - inbound `composed_from:` references from synthesis notes
+    """
+    if slug not in nodes:
+        print(f"Not found: {slug}", file=sys.stderr)
+        sys.exit(1)
+
+    inbound_supports = []
+    inbound_moc_listings = []
+    inbound_composed_from = []
+
+    target_link = f"[[{slug}]]"
+    target_display = f"[[{slug.replace('-', ' ')}]]"
+    for s, info in nodes.items():
+        if s == slug:
+            continue
+        fm = info["frontmatter"]
+        body = info["body"]
+        # Frontmatter list fields where this claim might be referenced
+        vals = fm.get("supports", [])
+        if isinstance(vals, list) and any(slug in v or slug.replace("-", " ") in v for v in vals):
+            inbound_supports.append(s)
+        cf = fm.get("composed_from", [])
+        if isinstance(cf, list) and any(slug in v or slug.replace("-", " ") in v for v in cf):
+            inbound_composed_from.append(s)
+        # MOC body inclusion (MOCs start with _)
+        if s.startswith("_"):
+            if target_link in body or target_display in body:
+                inbound_moc_listings.append(s)
+
+    score = len(inbound_supports) + len(inbound_moc_listings) + len(inbound_composed_from)
+    print(f"leverage score for {slug}: {score}")
+    print(f"  inbound supports:        {len(inbound_supports)}")
+    for x in inbound_supports[:8]:
+        print(f"    {x}")
+    if len(inbound_supports) > 8:
+        print(f"    ... +{len(inbound_supports) - 8} more")
+    print(f"  MOC memberships:         {len(inbound_moc_listings)}")
+    for x in inbound_moc_listings:
+        print(f"    {x}")
+    print(f"  inbound composed_from:   {len(inbound_composed_from)}")
+    for x in inbound_composed_from[:8]:
+        print(f"    {x}")
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description="Graph topology operations on a second-brain vault.")
     p.add_argument("--vault", default=".", help="Vault root (containing notes/).")
@@ -194,6 +362,10 @@ def main() -> None:
     p_br = sub.add_parser("bridges")
     p_br.add_argument("topic")
     sub.add_parser("moc-coverage")
+    p_md = sub.add_parser("moc-density")
+    p_md.add_argument("--threshold", type=int, default=30)
+    p_lev = sub.add_parser("leverage")
+    p_lev.add_argument("slug")
 
     args = p.parse_args()
     vault_root = Path(args.vault).resolve()
@@ -213,6 +385,10 @@ def main() -> None:
         cmd_bridges(nodes, adj, args.topic)
     elif args.cmd == "moc-coverage":
         cmd_moc_coverage(nodes, adj)
+    elif args.cmd == "moc-density":
+        cmd_moc_density(nodes, adj, args.threshold)
+    elif args.cmd == "leverage":
+        cmd_leverage(nodes, adj, args.slug)
 
 
 if __name__ == "__main__":

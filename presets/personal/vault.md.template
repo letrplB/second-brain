@@ -1,0 +1,66 @@
+# {VAULT_NAME} — second-brain personal vault
+
+This is a personal second-brain. The graph is in `notes/`. Atoms are **memories** (one experience or insight per file). Bodies are 100–400 words. Frontmatter is the contract; the `description` field is the model's first triage signal.
+
+CLAUDE.md (alongside this file) holds session-start instructions; the rest of the vault contract is here.
+
+The personal preset uses warmer language than the research preset; tune your own personality in `self/identity.md`.
+
+## The verbs
+
+Same as research, with looser application:
+
+- `/extract <source>` — usually unused; personal capture is direct
+- `/connect <note>` — link a memory to people/places/themes
+- `/walk <query>` — search the graph
+- `/audit <note>` — quality check (less strict than research)
+- `/learn <source>` — for occasional sources you want to digest deeply (a book, a podcast)
+- `/anneal --scope=...` — periodic care for the graph
+- `/init` — once
+
+## Atom contract
+
+A **memory** lives at `notes/<kebab-case-of-the-memory>.md`:
+
+```yaml
+---
+description: "One sentence of context that isn't the title"
+type: memory
+confidence: vivid | clear | hazy | reconstructed
+created: YYYY-MM-DD
+when: YYYY-MM-DD or ~range
+where: "[[place-link]]" (optional)
+who: ["[[person]]", ...]
+themes: [tag, tag, ...]
+---
+```
+
+A **life-area map** lives at `notes/_<area>.md`:
+
+```yaml
+---
+description: "What this life area covers"
+type: life-area-map
+parent_map: "[[index]]"
+---
+```
+
+## Walking conventions
+
+- Inline links carry the weight of context. Don't pile bare wikilinks.
+- Memory titles are first-person prose: "the day i noticed dad was getting older", "what i learned from the july review".
+- Linking is voluntary; this isn't research. A solitary memory still has value.
+
+## Subagent policy
+
+Almost never. Personal capture is small-scale. Spawn only for:
+- Reading a long book and extracting many memories (`/learn --deep`)
+- Whole-vault sweeps (`/audit --vault`, `/anneal --scope=vault`)
+
+## Reference
+
+- `{PLUGIN_ROOT}/DESIGN.md` — principles
+- `{PLUGIN_ROOT}/reference/methodology.md` — editorial conventions
+- `{PLUGIN_ROOT}/reference/empirical-grounding/` — PKM/cognition notes (consult on demand)
+
+<!-- {PREFERENCES_BLOCK} -->

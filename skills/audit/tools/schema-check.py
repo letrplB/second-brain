@@ -28,6 +28,7 @@ FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 # unless a vault explicitly extends it. Add fields here as the contract evolves.
 REQUIRED = {
     "claim": {"description", "type", "confidence", "created"},
+    "synthesis": {"description", "type", "confidence", "created"},
     "paper": {"description", "type", "year"},
     "method": {"description", "type", "method_type"},
     "topic-map": {"description", "type"},
@@ -40,18 +41,31 @@ REQUIRED = {
 ENUMS = {
     "confidence": {
         "claim": {"established", "probable", "speculative", "contested"},
+        "synthesis": {"established", "probable", "speculative", "contested"},
         "memory": {"vivid", "clear", "hazy", "reconstructed"},
     },
     "evidence_type": {
         "claim": {"experimental", "observational", "computational", "theoretical", "meta-analysis"},
+        "synthesis": {"experimental", "observational", "computational", "theoretical", "meta-analysis"},
         "memory": {"direct-experience", "witnessed", "reported", "inferred"},
     },
     "type": {
-        "*": {"claim", "paper", "method", "topic-map", "domain-map", "index", "memory", "life-area-map"},
+        "*": {"claim", "synthesis", "paper", "method", "topic-map", "domain-map", "index", "memory", "life-area-map"},
     },
     "method_type": {
-        "method": {"characterization", "synthesis", "analysis", "experimental", "computational"},
+        "method": {"characterization", "synthesis", "analysis", "experimental", "computational", "statistical"},
     },
+}
+
+# Optional numeric confidence overlay: a 0..1 score. The enum stays required; the
+# numeric field lets claims with replication data or statistical evidence carry
+# precision the enum cannot. /audit warns if score and enum disagree heavily.
+CONFIDENCE_SCORE_BUCKETS = {
+    "speculative": (0.0, 0.4),
+    "probable": (0.4, 0.75),
+    "established": (0.75, 1.0),
+    # contested is a special category: high disagreement, not a low number.
+    # We don't bucket it; mismatch detection skips contested claims.
 }
 
 DESCRIPTION_MAX = 240
@@ -145,13 +159,31 @@ def check_note(path: Path) -> list[str]:
             issues.append(f"description too long ({len(desc)} > {DESCRIPTION_MAX})")
         if is_paraphrase(desc, title_from_path(path)):
             issues.append("description appears to paraphrase the title (must add information beyond title)")
-    # body length (claims/memories)
-    if note_type in {"claim", "memory"}:
+    # body length (claims/synthesis/memories)
+    if note_type in {"claim", "synthesis", "memory"}:
         words = len(re.findall(r"\S+", body))
         if words < 100:
-            issues.append(f"body short ({words} words): claims/memories should be 150-400 words; expand mechanism or evidence")
+            issues.append(f"body short ({words} words): expand mechanism or evidence; aim for 150-400")
         if words > 500:
-            issues.append(f"body long ({words} words): claims/memories should be 150-400 words; consider splitting")
+            issues.append(f"body long ({words} words): consider splitting; aim for 150-400")
+    # Optional confidence_score: must be a number in [0,1] and roughly agree with enum
+    if "confidence_score" in fm:
+        score_raw = fm["confidence_score"]
+        try:
+            score = float(score_raw)
+        except (TypeError, ValueError):
+            issues.append(f"confidence_score: '{score_raw}' is not a number")
+        else:
+            if not (0.0 <= score <= 1.0):
+                issues.append(f"confidence_score: {score} out of [0, 1]")
+            else:
+                conf = fm.get("confidence", "")
+                bucket = CONFIDENCE_SCORE_BUCKETS.get(conf)
+                if bucket is not None and not (bucket[0] <= score <= bucket[1]):
+                    issues.append(
+                        f"confidence_score {score:.2f} disagrees with enum '{conf}' "
+                        f"(expected within {bucket[0]:.2f}-{bucket[1]:.2f})"
+                    )
     return issues
 
 

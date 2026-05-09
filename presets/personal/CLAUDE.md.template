@@ -1,73 +1,16 @@
 # {VAULT_NAME} — second-brain personal vault
 
-This is a personal second-brain. The graph is in `notes/`. Atoms are **memories** (one experience or insight per file). Bodies are 100–400 words. Frontmatter is the contract; the `description` field is the model's first triage signal.
+> This block is the second-brain vault context. It can stand alone in this directory, or be merged into a parent CLAUDE.md by copy-pasting the section below.
 
 This vault has a `self/` directory (identity, goals, values). The model reads it on session start to keep tone and frame consistent.
 
 ## On every session start
 
-```
-1. Read self/identity.md and self/goals.md
-2. Glance at inbox/
-3. Glance at notes/ — last ~10 by mtime
-4. Print: "Hi. Active threads: X. Last memory captured: Y. Anything to add?"
-```
+1. Read `self/identity.md` and `self/goals.md` to recover voice and threads.
+2. Read `vault.md` for the atom contract and verb specs.
+3. Glance at `inbox/` and `notes/` (last ~10 by mtime).
+4. Surface a one-line orientation: "Hi. Active threads: X. Last memory captured: Y. Anything to add?"
 
-The personal preset uses warmer language than the research preset; tune your own personality in `self/identity.md`.
+## What this directory is
 
-## The verbs
-
-Same as research, with looser application:
-
-- `/extract <source>` — usually unused; personal capture is direct
-- `/connect <note>` — link a memory to people/places/themes
-- `/walk <query>` — search the graph
-- `/audit <note>` — quality check (less strict than research)
-- `/learn <source>` — for occasional sources you want to digest deeply (a book, a podcast)
-- `/anneal --scope=...` — periodic care for the graph
-- `/init` — once
-
-## Atom contract
-
-A **memory** lives at `notes/<kebab-case-of-the-memory>.md`:
-
-```yaml
----
-description: "One sentence of context that isn't the title"
-type: memory
-confidence: vivid | clear | hazy | reconstructed
-created: YYYY-MM-DD
-when: YYYY-MM-DD or ~range
-where: "[[place-link]]" (optional)
-who: ["[[person]]", ...]
-themes: [tag, tag, ...]
----
-```
-
-A **life-area map** lives at `notes/_<area>.md`:
-
-```yaml
----
-description: "What this life area covers"
-type: life-area-map
-parent_map: "[[index]]"
----
-```
-
-## Walking conventions
-
-- Inline links carry the weight of context. Don't pile bare wikilinks.
-- Memory titles are first-person prose: "the day i noticed dad was getting older", "what i learned from the july review".
-- Linking is voluntary; this isn't research. A solitary memory still has value.
-
-## Subagent policy
-
-Almost never. Personal capture is small-scale. Spawn only for:
-- Reading a long book and extracting many memories (`/learn --deep`)
-- Whole-vault sweeps (`/audit --vault`, `/anneal --scope=vault`)
-
-## Reference
-
-- `${PLUGIN_ROOT}/CHARTER.md` — principles
-- `${PLUGIN_ROOT}/reference/methodology.md` — editorial conventions
-- `${PLUGIN_ROOT}/reference/empirical-grounding/` — PKM/cognition notes (consult on demand)
+A personal second-brain — memories, journals, identity. Verbs: `/extract`, `/connect`, `/walk`, `/audit`, `/learn`, `/anneal`, `/init`. Future: `/dream`. Full contract in `vault.md`.

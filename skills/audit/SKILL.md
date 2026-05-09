@@ -48,9 +48,10 @@ argument-hint: "[note-path] [--vault] [--mode=quick|full] — note to audit. --v
 ### Vault audit (`--vault`)
 
 1. Same schema + link checks across every `notes/**.md`.
-2. Run `tools/topology.py orphans` and `tools/topology.py moc-coverage` for structural health.
+2. Run `../walk/tools/topology.py orphans` and `topology.py moc-coverage` for structural health.
 3. Sample cold-read on ~10 claims (random + recent) — full cold-read on every note is too expensive.
-4. Synthesise: total counts, top-N worst-offenders, suggested order of fix.
+4. **Run `tools/health-metrics.py`** to print the four-family health dashboard (coherence, connectivity, boundary precision, confidence distribution). This is the per-session eval signal from the claim-fact-gradient framing — print it as the `## Health Metrics` section of the report.
+5. Synthesise: total counts, top-N worst-offenders, suggested order of fix.
 
 ## When to spawn a subagent
 
@@ -77,5 +78,5 @@ argument-hint: "[note-path] [--vault] [--mode=quick|full] — note to audit. --v
 
 ## Cross-references
 
-- Tools: `tools/schema-check.py`, `tools/link-check.sh`, `walk/tools/topology.py`
+- Tools: `tools/schema-check.py`, `tools/link-check.sh`, `tools/health-metrics.py`, `../walk/tools/topology.py`
 - Editorial: `reference/empirical-grounding/distinctiveness scoring treats description quality as measurable.md`, `descriptions are retrieval filters not summaries.md`

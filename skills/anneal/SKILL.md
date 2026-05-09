@@ -44,13 +44,20 @@ For each note, check against the methodology core:
 
 For `--scope=topic` add MOC-specific checks:
 - The MOC's `## Core claims` lists ≥3 claims (else: too narrow, consider absorbing into parent).
-- The MOC's `## Core claims` lists ≤30 claims (else: too broad, consider splitting).
+- **MOC density (paired-axis check, replacing the old single-axis "≤30 claims" rule).** Run `walk/tools/topology.py moc-density --threshold N` to compute claim count *and* internal-edge density (mean internal degree among the MOC's members). The verdict combines both:
+  - `split-candidate` — count > threshold AND mean internal degree < 1.0. The MOC is a "cocktail party": many claims that don't talk to each other. Splitting harms nothing.
+  - `productive-crowd` — count > threshold AND mean internal degree ≥ 1.0. The MOC is a "working group" or programme-organising thesis: claims cross-link, density is the *evidence engine*. **Do not suggest splitting**. Note the high count for transparency, recommend audit instead.
+  - `ok` — count ≤ threshold.
+  - `small` — count < 3 (consider absorbing into parent).
+  - The mean-internal-degree threshold (1.0) is a starting calibration; tune against the vault's distribution before tightening.
+- **Isolated members (optional extension).** `topology.py moc-density` also lists, per MOC, the claims that have zero links to siblings in the same MOC. These are split candidates *regardless of MOC-level density* — they're sitting in a tag that doesn't reflect their epistemic position. Suggest re-tagging them or moving them to a more appropriate MOC.
 - Bidirectionality: every claim in `## Core claims` lists this MOC in its `## Topics` footer, and vice versa.
 
 For `--scope=vault` add structural checks (via `walk/tools/topology.py`):
 - Orphan count + ratio
 - MOC coverage gaps
 - High-centrality claims that lack a description (those are read most; description quality matters most)
+- MOC density report (the same paired-axis check above, run across every MOC)
 
 ### Phase 3 — report
 
@@ -110,6 +117,7 @@ git commit -m "anneal: <scope> — <N> fixes applied"
 - **Auto-applying without confirmation.** Every fix gets the user's nod first.
 - **Adding content.** Anneal lowers disorder. If a note is missing a section the user ought to write, flag it; don't fabricate the section.
 - **Touching git without `--commit`.** No silent commits. The flag is the consent.
+- **Single-axis MOC splitting.** Never propose a split based on claim-count alone. Density is a paired observable — count is meaningful only against internal-edge density. A dense MOC may be a maturation chamber or a programme-organising thesis; splitting either is destructive. The `productive-crowd` verdict exists specifically to prevent this; respect it.
 
 ## Output
 
