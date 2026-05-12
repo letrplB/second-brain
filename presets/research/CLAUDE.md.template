@@ -13,4 +13,4 @@ If `goals.md` looks stale (no progress >7 days), say so.
 
 ## What this directory is
 
-A graph of atomic claims. Verbs: `/extract`, `/connect`, `/walk`, `/audit`, `/learn`, `/anneal`, `/init`. Future: `/dream`. Full contract and conventions in `vault.md`.
+A graph of atomic claims. Verbs: `/extract`, `/connect`, `/walk`, `/audit`, `/learn`, `/anneal`, `/init`, `/dream`. Surrender system (opt-in via `surrender.enabled` in `vault.yaml`): `/no-surrender` (v1), `/teach` (v2). Full contract and conventions in `vault.md`.

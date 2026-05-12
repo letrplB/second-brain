@@ -14,6 +14,8 @@ CLAUDE.md (alongside this file) holds session-start instructions; the rest of th
 | `/audit <note>` | schema + link + cold-read quality check. `--vault` for whole vault. |
 | `/learn <source>` | full ingestion: extract → connect → audit. `--deep` parallelises per-claim. |
 | `/anneal --scope=...` | methodology coach pass; flag drift, suggest fixes, optionally commit. |
+| `/no-surrender <target>` | **gated by `surrender.enabled` in `vault.yaml`.** Probe the user's grip on a claim across mechanism / implications / falsifiability / bounds. Updates the `engagement` vector. v1 cooperative-mode only. The only verb that writes engagement. |
+| `/teach <target>` | **v2 — not yet built.** Pedagogical companion to `/no-surrender`. Builds engagement via Socratic prompts; does NOT write engagement. |
 | `/init` | scaffold a new vault. (Used once.) |
 
 Composition is implicit: when you `/learn`, the model orchestrates extract → connect → audit. When you `/extract` alone, only mechanical extraction happens.
@@ -35,8 +37,22 @@ supports: ["[[other-claim]]", ...]
 contradicts: ["[[other-claim]]", ...]
 methods: ["[[method-note]]", ...]
 tags: [domain-tag, topic-tag, ...]
+
+# OPTIONAL — gated by surrender.enabled in vault.yaml. Written by /no-surrender only.
+# Absence = high surrender = engagement 0 for all axes (default pessimism).
+engagement:
+  axes:                              # each in [0,1], null = unscored = high surrender
+    mechanism: null                  # user's grip on the causal/structural why
+    implications: null               # what follows from the claim
+    falsifiability: null             # what would refute it
+    bounds: null                     # where it stops applying
+  stability:                         # FSRS-style per-axis days, governs decay rate
+    # populated per-axis after first /no-surrender
+  last_tested: null                  # ISO date of most recent /no-surrender pass
 ---
 ```
+
+The `engagement` block is documented here for forward-compatibility. When `surrender.enabled: false` in `vault.yaml` (default), the block is ignored by all consumers and is not added to new claims. The schema's persistent presence makes the surrender feature a *toggle* rather than a migration.
 
 A **synthesis note** lives at `notes/synthesis/<kebab-case-prose-proposition>.md` — for *your-thinking* claims that emerge from combining sourced claims rather than from any single source. Distinct from claims because the warrant is reasoning, not citation. Frontmatter:
 

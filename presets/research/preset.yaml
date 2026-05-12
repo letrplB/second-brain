@@ -19,6 +19,16 @@ qmd:
   enabled: true             # qmd MCP for semantic search
   collection: ${VAULT_NAME}
 
+# Surrender tracking — per-claim engagement metric with FSRS-inspired decay.
+# Default OFF — user enables this as a deliberate choice (matches the "deliberate activation" principle).
+# When enabled: /no-surrender probes user grip on claims (mechanism / implications / falsifiability / bounds);
+# /walk surfaces engagement column + weakest-grip panel + deployment_safety footer.
+# Skills MUST read this file at every invocation — never cache the flag.
+surrender:
+  enabled: false            # MASTER FLAG. Set true to enable the surrender system.
+  walk_integration: true    # When master is on, surface engagement in /walk output.
+  default_harshness: 0.4    # Default λ for /walk weighted ranking. weight = (1 - λ) + λ · engagement.
+
 # Note types this preset uses
 note_types:
   - claim

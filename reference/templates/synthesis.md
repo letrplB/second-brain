@@ -9,6 +9,19 @@ composed_from:
   - "[[source-claim-2]]"
 emerged_via: dream | direct | weekly-synthesis
 tags: []
+
+# OPTIONAL — gated by surrender.enabled in vault.yaml (default off).
+# /no-surrender adds this block on the first probe. Synthesis engagement is upper-bounded at read-time
+# by the minimum engagement axis across composed_from inputs — you cannot understand a synthesis
+# better than its weakest premise.
+# engagement:
+#   axes:
+#     mechanism: null
+#     implications: null
+#     falsifiability: null
+#     bounds: null
+#   stability: {}
+#   last_tested: null
 ---
 
 # {Title is the prose-proposition filename}

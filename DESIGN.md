@@ -62,7 +62,7 @@ A user inspecting the plugin sees:
 
 ## Verbs
 
-Seven active, one reserved for the future:
+Nine active + one reserved:
 
 | Verb | Type | What it does |
 |---|---|---|
@@ -73,9 +73,13 @@ Seven active, one reserved for the future:
 | `/learn` | composite | full ingestion: extract → connect → audit. `--deep` parallelises per-claim |
 | `/init` | composite | scaffold a vault from a preset (guided or quick) |
 | `/anneal` | composite | methodology-coach pass on recent work; explicit, never proactive |
-| `/dream` | reserved | LLM-driven consolidation of high-level understanding (future) |
+| `/dream` | composite | model surfaces connections / patterns / questions from recent activity to inbox |
+| `/no-surrender` | primitive (gated) | probe user grip on a claim across mechanism / implications / falsifiability / bounds; updates engagement vector |
+| `/teach` | composite (gated, v2) | Socratic teaching on identified engagement gaps; pedagogical sibling to `/no-surrender`; does NOT write engagement |
 
 Detailed specs in each `skills/<verb>/SKILL.md`.
+
+**Gated verbs** (`/no-surrender`, `/teach`) are off by default behind `surrender.enabled` in `vault.yaml`. Activation is a deliberate user choice — the architectural application of the same anti-surrender principle the verbs themselves implement at the per-claim level. See `skills/no-surrender/SKILL.md` and the per-vault `surrender-tracking-design.md` if present.
 
 ## Data model
 

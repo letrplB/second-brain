@@ -15,8 +15,14 @@ A small set of orthogonal verbs operating on a directory of atomic markdown note
 | `/learn` | full ingestion: extract → connect → audit. `--deep` parallelises per-claim |
 | `/init` | scaffold a vault from a preset (guided or quick) |
 | `/anneal` | methodology-coach pass on recent work (explicit, never proactive) |
+| `/dream` | model surfaces 3 connections + 1 pattern + 1 question from recent activity to inbox |
 
-Reserved for the future: `/dream` — LLM-driven consolidation of high-level understanding.
+Surrender system (opt-in via `surrender.enabled` in `vault.yaml`, default off):
+
+| Verb | What |
+|---|---|
+| `/no-surrender` | probe user grip on a claim across mechanism / implications / falsifiability / bounds; updates engagement vector with FSRS-inspired decay |
+| `/teach` | (v2) Socratic teaching on identified engagement gaps; does NOT write engagement |
 
 ## What it is not
 

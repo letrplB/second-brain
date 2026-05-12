@@ -177,7 +177,7 @@ Quick mode is silent — no prompts, no questions. Suitable for scripting, testi
    ├── vault.yaml                  (runtime config)
    └── goals.md                    (research) or self/goals.md (personal)
    ```
-4. **Write `vault.yaml`** with the resolved values (preset, domain, vocabulary, qmd config, git config, created date).
+4. **Write `vault.yaml`** with the resolved values (preset, domain, vocabulary, qmd config, git config, surrender config, created date). The `surrender:` block is copied from the preset's `preset.yaml` and always lands with `enabled: false` — surrender activation is a deliberate user choice, never auto-on at init.
 5. **Generate `CLAUDE.md`** (thin) and **`vault.md`** (full contract) from the preset's templates. Both substitute the same placeholders:
    - `{VAULT_NAME}` → vault root basename
    - `{DOMAIN}` → resolved domain slug

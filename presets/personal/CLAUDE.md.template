@@ -13,4 +13,4 @@ This vault has a `self/` directory (identity, goals, values). The model reads it
 
 ## What this directory is
 
-A personal second-brain — memories, journals, identity. Verbs: `/extract`, `/connect`, `/walk`, `/audit`, `/learn`, `/anneal`, `/init`. Future: `/dream`. Full contract in `vault.md`.
+A personal second-brain — memories, journals, identity. Verbs: `/extract`, `/connect`, `/walk`, `/audit`, `/learn`, `/anneal`, `/init`, `/dream`. Surrender system available but opt-in via `surrender.enabled` in `vault.yaml` (default off; axes are research-shaped, adapt locally if used). Full contract in `vault.md`.

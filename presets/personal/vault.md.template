@@ -16,6 +16,7 @@ Same as research, with looser application:
 - `/audit <note>` — quality check (less strict than research)
 - `/learn <source>` — for occasional sources you want to digest deeply (a book, a podcast)
 - `/anneal --scope=...` — periodic care for the graph
+- `/no-surrender <target>` — *opt-in via `surrender.enabled` in `vault.yaml` (default off).* Probe your grip on a memory or reflection. The default axes are research-oriented; adapt locally if you want to track engagement on memories — engagement is fuzzier here than for atomic claims.
 - `/init` — once
 
 ## Atom contract

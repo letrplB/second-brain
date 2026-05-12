@@ -16,6 +16,16 @@ qmd:
   enabled: true
   collection: ${VAULT_NAME}
 
+# Surrender tracking — opt-in. The default axis vector (mechanism / implications / falsifiability / bounds)
+# is research-oriented; for personal vaults, memories rather than propositions, the axes apply less
+# directly. Enable only if you want to formalise reflection-engagement on your memories — and consider
+# adapting the axes in the no-surrender skill (e.g. "presence", "context", "trigger" might fit better
+# than "falsifiability" / "bounds").
+surrender:
+  enabled: false            # MASTER FLAG. Default off; opt-in only.
+  walk_integration: true
+  default_harshness: 0.3    # Lower default harshness for personal — engagement is fuzzier, not load-bearing for citations.
+
 note_types:
   - memory
   - person
