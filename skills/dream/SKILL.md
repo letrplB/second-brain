@@ -4,6 +4,7 @@ description: Push synthesis back at the user. Daily mode pulls 3 connections + 1
 version: "0.1"
 user-invocable: true
 allowed-tools: Read, Write, Glob, Bash, mcp__qmd__query, mcp__qmd__multi_get
+# tools/topology.py is invoked via Bash for the lonely-cluster check (step 7 in daily mode).
 argument-hint: "[--daily | --weekly] [--scope=<window>] — daily is the default. --scope overrides the time window (e.g. --scope=14d for the last two weeks)."
 ---
 
@@ -58,7 +59,12 @@ Output: `inbox/dream-week-{YYYY-WXX}.md`.
    - State it in one sentence with two example wikilinks.
 6. **Frame question (1):**
    - The question should be answerable with a session of work but not currently answered. Look at the gap between what active threads ask for and what recent claims have shown.
-7. **Write brief:**
+7. **Lonely-cluster check (optional, structural).**
+   - Run `tools/topology.py disconnected-clusters --min-size 5`. The subcommand returns pairs of MOCs whose member sets share no claims and have zero 1-hop cross-edges — graph-disconnected clusters.
+   - Why this step exists: dream's connection-finder traverses the graph (qmd-augmented or not). If two clusters share *no* edges, no traversal can ever surface analogies between them — yet cross-cluster bridges are often the highest-value synthesis candidates. Without this check, the brief systematically deepens within-cluster while disconnected gaps persist.
+   - If at least one pair surfaces with both clusters >= 8 members, append a `## Lonely clusters` section listing the top 1–2 pairs (by combined size). State the disconnection as fact; do **not** propose specific bridges (that would be guessing — propose them in /walk if you want, not dream). Phrase: *"`_A` ({sa} members) and `_B` ({sb} members) share no graph edges. Worth asking: does any wirable bridge exist?"*
+   - If no pair clears the threshold, omit the section.
+8. **Write brief:**
 
 ```markdown
 # Daily Brief — 2026-05-08
@@ -76,6 +82,11 @@ Output: `inbox/dream-week-{YYYY-WXX}.md`.
 ## Question
 
 <one question, no task>
+
+## Lonely clusters
+
+*(only if disconnected-clusters surfaced a pair >=8 members on each side)*
+- `_A` ({sa}) and `_B` ({sb}) share no graph edges. Worth asking: does any wirable bridge exist?
 
 ---
 *From last 7 days of activity. Read once and act. If a connection or pattern warrants a synthesis claim, run `/extract <this-brief>` or write directly in `notes/synthesis/`.*
@@ -149,6 +160,8 @@ Supported by:
 - **Overgeneralisation.** Patterns must cite ≥2 specific wikilinks. "I notice you're thinking about X" without claims to back it is not a pattern; it's flattery.
 - **Task list creep.** The output is a brief, not a TODO. One question per daily, one action per weekly. Anything more dilutes both.
 - **Stale-brief mode.** If `--scope` window has fewer than 3 new claims, say "the vault has been quiet — nothing to brief on" rather than padding. Honest no-output beats fluff.
+- **Single-anchor cohesion blindness.** A brief that picks one thematic anchor (e.g. yesterday's Goodhart frame) and runs all three connections inside it can systematically miss bridges in *other* frames. The lonely-cluster check is the structural counter-pressure: even if the in-frame connections are strong, the brief still names the largest disconnected pair, so disconnection doesn't compound silently.
+- **Proposing the bridge yourself.** The lonely-cluster section names the gap, not the fix. Surfacing a specific cross-cluster claim pair belongs in /walk; the brief's job is to make the gap visible so the user (or a later /walk pass) can decide.
 
 ## Output
 

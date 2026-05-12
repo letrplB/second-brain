@@ -33,4 +33,6 @@ tags: []
 
 ## Topics
 
-- [[_<topic-moc>]] — why this synthesis sits there
+- [[_<topic-moc-1>]] — why this synthesis sits there
+- [[_<topic-moc-2>]] — the other cluster it bridges (synthesis claims typically sit in 2+ MOCs by design)
+- [[_cross-domain-bridges]] — list here if the synthesis bridges two MOCs that share no other graph edges. Most cross-cluster synthesis qualifies. The bridge-map is a meta-MOC; see `methodology.md` §5.

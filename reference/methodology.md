@@ -77,6 +77,18 @@ A domain-MOC at `notes/_<domain>.md` is one level up: it lists its topic-MOCs, n
 
 `notes/index.md` is the root: lists domains.
 
+### Meta-MOCs (the orthogonal layer)
+
+A **meta-MOC** is a topic-map with frontmatter `meta: true` that organizes other MOCs rather than claims. It sits outside the three-tier hierarchy (`index → _domain → _topic → claim`) and aggregates synthesis work that bridges across it.
+
+The canonical instance is `_cross-domain-bridges.md`. The convention:
+
+- Every synthesis claim that bridges two MOCs sharing no other graph edges should appear in `_cross-domain-bridges` under `## Wired bridges`, with the clusters bridged, the anchor synthesis, the source claims on each side, and the bridge's *character* (substrate / dynamics / analogy / structural parallel / counter-example).
+- The bridge-map's `## Open bridges` section pairs the wired list with lonely-pair output from `topology.py disconnected-clusters`. Positive and negative space lives in one place.
+- The frontmatter `meta: true` is **load-bearing**: `topology.py disconnected-clusters` excludes meta-MOCs from the lonely-pair scan. Without that exclusion, the bridge-map appears "disconnected" from every cluster it doesn't yet bridge — false positives that inflate noise.
+
+Meta-MOCs are rare. The bridge-map is the first and currently only instance. Future candidates: a tensions-map, an open-questions-map. Promote only when the meta-level reaches its own critical mass; do not create them speculatively.
+
 See: `empirical-grounding/MOC construction forces synthesis that automated generation from metadata cannot replicate.md`, `MOCs are attention management devices not just organizational tools.md`, `basic level categorization determines optimal MOC granularity.md`, `complete navigation requires four complementary types that no single mechanism provides.md`.
 
 ## 6. The processing skeleton

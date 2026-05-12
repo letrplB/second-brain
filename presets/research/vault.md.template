@@ -94,6 +94,7 @@ description: "What this topic covers"
 type: topic-map
 parent_map: "[[_<parent-domain>]] or [[index]]"
 scope: "What this map covers in one sentence"
+meta: true               # OPTIONAL — set when this MOC organises other MOCs (a meta-MOC) rather than claims. Meta-MOCs are excluded from topology's disconnected-clusters scan because they touch many clusters by construction. First instance: `_cross-domain-bridges.md`.
 ---
 ```
 
@@ -104,6 +105,7 @@ scope: "What this map covers in one sentence"
 - **Title = filename = kebab-case prose proposition.** Not topic labels. `cognitive-surrender-is-path-dependent.md`, not `surrender.md`.
 - **Description ≠ summary.** Layer: heuristic, then mechanism, then implication.
 - **Body 150–400 words.** Shorter = lift the field. Longer = split.
+- **Meta-MOCs.** A topic-map with frontmatter `meta: true` organises other MOCs rather than claims — it sits orthogonal to the three-tier `index → _domain → _topic → claim` hierarchy. The canonical instance is `_cross-domain-bridges.md`, which indexes synthesis claims that wire previously-disconnected clusters. Every synthesis bridging two MOCs with no other shared edges should be listed there. Meta-MOCs are excluded from `topology.py disconnected-clusters` scans.
 
 ## Subagent policy
 

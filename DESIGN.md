@@ -115,6 +115,7 @@ Three rules that don't bend:
 - Three-tier MOC topology: `index.md` → `_<domain>.md` → `_<topic>.md` → leaf claim. Bidirectional links — every claim ends with a `## Topics` footer; every MOC has a `## Core claims` section.
 - Atom titles compose into wikilinks that read as sentences (`title as claim enables traversal as reasoning`).
 - Confidence is honest: `established` is rare and earned; `probable` is the typical case; `speculative` is fine *and must be marked*; `contested` is for active counter-evidence.
+- **Meta-MOCs (orthogonal layer).** A topic-map with `meta: true` is a meta-MOC — it organizes other MOCs rather than claims, sitting orthogonal to the three-tier hierarchy. The canonical instance is `_cross-domain-bridges.md`, which indexes synthesis claims that wire previously-disconnected clusters (positive space) alongside the lonely-pair output of `topology.py disconnected-clusters` (negative space). Meta-MOCs are excluded from disconnected-clusters scans so they don't pollute the lonely-pair signal — without that exclusion they'd appear "disconnected" from every cluster they don't yet bridge.
 
 ## Subagent policy
 

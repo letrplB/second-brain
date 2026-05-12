@@ -3,6 +3,7 @@ description: "What this topic covers in one sentence"
 type: topic-map
 parent_map: "[[_<parent-domain-or-index>]]"
 scope: "What this map covers in one sentence"
+meta: true               # OPTIONAL — set when this MOC organises other MOCs rather than claims (a meta-MOC). Meta-MOCs are excluded from `topology.py disconnected-clusters` scans because they touch many clusters by construction. First instance: `_cross-domain-bridges.md`. See `methodology.md` §5 → "Meta-MOCs".
 ---
 
 # {Topic name}

@@ -51,7 +51,11 @@ argument-hint: "[note-path] [--vault] [--mode=quick|full] — note to audit. --v
 2. Run `../walk/tools/topology.py orphans` and `topology.py moc-coverage` for structural health.
 3. Sample cold-read on ~10 claims (random + recent) — full cold-read on every note is too expensive.
 4. **Run `tools/health-metrics.py`** to print the four-family health dashboard (coherence, connectivity, boundary precision, confidence distribution). This is the per-session eval signal from the claim-fact-gradient framing — print it as the `## Health Metrics` section of the report.
-5. Synthesise: total counts, top-N worst-offenders, suggested order of fix.
+5. **Bridge-map consistency check** (`_cross-domain-bridges.md`):
+   - Every synthesis claim listed under `## Wired bridges` must exist on disk and have `type: synthesis`.
+   - Every synthesis claim that bridges a pair surfaced by `topology.py disconnected-clusters` (with both clusters ≥ 5 members) should appear in the bridge-map. Flag synthesis claims that meet the bridge criterion but aren't listed — they're un-indexed bridges.
+   - Every meta-MOC (frontmatter `meta: true`) must have `parent_map: "[[index]]"` and a `scope` field. Other meta-MOCs are rare; flag any beyond `_cross-domain-bridges` for human review of whether the meta-level is justified.
+6. Synthesise: total counts, top-N worst-offenders, suggested order of fix.
 
 ## When to spawn a subagent
 

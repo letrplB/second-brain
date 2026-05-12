@@ -12,6 +12,7 @@ Usage:
   topology.py neighbors <claim-slug> [--depth N]
   topology.py moc-coverage
   topology.py moc-density [--threshold N]
+  topology.py disconnected-clusters [--min-size N]
 
 Run from the vault root (the directory containing notes/).
 
@@ -296,6 +297,82 @@ def cmd_moc_density(nodes: dict, adj: dict, threshold: int) -> None:
         print("No isolated members across any MOC.")
 
 
+def cmd_disconnected_clusters(nodes: dict, adj: dict, min_size: int) -> None:
+    """Find pairs of MOCs whose member sets are graph-disconnected.
+
+    A pair (A, B) is disconnected if:
+      - They share no member claims (no claim sits in both MOCs), AND
+      - No member of A links directly to any member of B.
+
+    Both MOCs must have >= min_size members to surface. The `index` MOC is excluded
+    because it touches everything by definition and would mask real disconnection.
+
+    Why this matters: dream/walk traverses the graph. If two clusters share no edges,
+    no graph-walk can ever surface analogies between them — yet the most valuable
+    bridges are often precisely cross-cluster. This subcommand surfaces the structural
+    gap without proposing what should fill it (that's a /walk + /connect task).
+    """
+    DENSITY_TYPES = {"claim", "synthesis", "memory"}
+    moc_slugs = []
+    for s, info in nodes.items():
+        fm = info["frontmatter"]
+        is_moc = s.startswith("_") or fm.get("type") in {"topic-map", "domain-map", "life-area-map"}
+        if not is_moc or s == "index":
+            continue
+        # Meta-MOCs (frontmatter meta: true) organize other MOCs rather than claims —
+        # they touch many clusters by construction. Including them inflates the
+        # disconnected-pair count with noise (a bridge-map appears "disconnected" from
+        # every cluster it doesn't yet bridge, which is most of them).
+        if str(fm.get("meta", "")).lower() == "true":
+            continue
+        moc_slugs.append(s)
+    moc_slugs.sort()
+
+    moc_members: dict = {}
+    for moc in moc_slugs:
+        members = set()
+        for n in adj.get(moc, ()):
+            if n not in nodes or n.startswith("_") or n == moc:
+                continue
+            ntype = nodes[n]["frontmatter"].get("type", "")
+            if ntype in DENSITY_TYPES:
+                members.add(n)
+        moc_members[moc] = members
+
+    pairs = []
+    for i, a in enumerate(moc_slugs):
+        ma = moc_members[a]
+        if len(ma) < min_size:
+            continue
+        for b in moc_slugs[i + 1:]:
+            mb = moc_members[b]
+            if len(mb) < min_size:
+                continue
+            if ma & mb:
+                continue
+            cross_edges = 0
+            for m in ma:
+                for nb in adj.get(m, ()):
+                    if nb in mb:
+                        cross_edges += 1
+                        break
+                if cross_edges:
+                    break
+            if cross_edges == 0:
+                pairs.append((a, b, len(ma), len(mb)))
+
+    pairs.sort(key=lambda p: -(p[2] + p[3]))
+    print(f"Disconnected MOC pairs (no shared members, no 1-hop cross-edges, both >={min_size}): {len(pairs)}")
+    if not pairs:
+        return
+    for a, b, sa, sb in pairs:
+        desc_a = nodes[a]["frontmatter"].get("description", "")[:70]
+        desc_b = nodes[b]["frontmatter"].get("description", "")[:70]
+        print(f"  {a} ({sa})  ↔  {b} ({sb})")
+        print(f"    A: {desc_a}")
+        print(f"    B: {desc_b}")
+
+
 def cmd_leverage(nodes: dict, adj: dict, slug: str) -> None:
     """Generative-leverage score for a claim: how many other claims/MOCs depend
     on or organise around this one. From the claim->fact-gradient essay's caveat
@@ -364,6 +441,8 @@ def main() -> None:
     sub.add_parser("moc-coverage")
     p_md = sub.add_parser("moc-density")
     p_md.add_argument("--threshold", type=int, default=30)
+    p_dc = sub.add_parser("disconnected-clusters")
+    p_dc.add_argument("--min-size", type=int, default=5)
     p_lev = sub.add_parser("leverage")
     p_lev.add_argument("slug")
 
@@ -387,6 +466,8 @@ def main() -> None:
         cmd_moc_coverage(nodes, adj)
     elif args.cmd == "moc-density":
         cmd_moc_density(nodes, adj, args.threshold)
+    elif args.cmd == "disconnected-clusters":
+        cmd_disconnected_clusters(nodes, adj, args.min_size)
     elif args.cmd == "leverage":
         cmd_leverage(nodes, adj, args.slug)
 

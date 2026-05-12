@@ -44,6 +44,14 @@ argument-hint: "[note-path] [--bulk <glob>] — note to connect. --bulk operates
 9. For each: add the note to the MOC's `## Core claims` (or equivalent) section with a context phrase.
 10. In the target note's footer, add or update `## Topics` listing the MOCs.
 
+### Meta-MOC pass (synthesis claims only)
+
+11. If the note is a synthesis claim (`type: synthesis`), check whether it bridges previously-disconnected clusters. Run `python3 tools/../../walk/tools/topology.py disconnected-clusters --min-size 5`; if the pair of MOCs the synthesis spans was on the list *before* this synthesis was wired, the synthesis is a *bridge*.
+12. If it is a bridge, add it to `_cross-domain-bridges.md` under `## Wired bridges` with a new subsection naming: the two MOCs bridged, the anchor synthesis, the source claims composing it, and the bridge's *character* (substrate / dynamics / analogy / structural parallel / counter-example — vocabulary in the bridge-map body). Add `[[_cross-domain-bridges]]` to the synthesis's `## Topics` footer.
+13. If a previously-listed open-bridge pair just got wired, remove that pair from `## Open bridges` in the bridge-map. The open-bridges list mirrors the negative space; the wired-bridges list mirrors the positive space.
+
+The bridge-map is a meta-MOC (`meta: true` in frontmatter) — it organizes other MOCs rather than claims. See `reference/methodology.md` §5 → "Meta-MOCs".
+
 ## When to spawn a subagent
 
 - If step 2 returns >50 candidates after dedup, spawn a subagent to filter (it gets the descriptions + frontmatter for all candidates, returns only the ~10 genuine ones).
@@ -54,8 +62,10 @@ argument-hint: "[note-path] [--bulk <glob>] — note to connect. --bulk operates
 
 - **Forced engagement.** Adding links because "we should connect this somewhere". Empty `## Core claims` in a MOC is fine if the note doesn't fit. Do not force it.
 - **Sibling clusters.** Notes co-extracted from the same source are *thematically related* but rarely *epistemically connected*. Don't link siblings unless one supports/contradicts/qualifies the other.
-- **MOC sprawl.** If a note fits 5+ MOCs, you've miscategorised it or the MOCs are too fine-grained. Pick the 1–3 closest fits.
+- **MOC sprawl.** If a note fits 5+ MOCs, you've miscategorised it or the MOCs are too fine-grained. Pick the 1–3 closest fits. (Exception: synthesis claims wired to `_cross-domain-bridges` legitimately sit in 3 — two domain MOCs plus the meta-MOC.)
 - **Stale links.** Before adding `[[wikilink]]`, check the file exists. Dangling links are a separate signal (handled by `/audit`).
+- **Bridge-map false positives.** A regular claim that happens to mention concepts from two clusters is not a bridge. Only synthesis claims (`type: synthesis`) belong in `_cross-domain-bridges`. The warrant for a bridge is *composition* — the synthesis derived a new claim from claims in both clusters — not topical overlap.
+- **Skipping the topology re-check.** Wiring a synthesis to clusters that *were already connected* through other claims is not a bridge — that's normal MOC membership. The disconnected-clusters check before wiring is the gate.
 
 ## Output
 

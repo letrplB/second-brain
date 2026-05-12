@@ -39,6 +39,7 @@ Specific operations on the graph structure. Each is a flag; tools/topology.py pr
 | `--neighbors <claim> [--depth N]` | claims within N hops of the named claim |
 | `--centrality` | ranked list of high-centrality (hub) claims |
 | `--moc-coverage` | list of claims that aren't in any `_<topic>.md` MOC |
+| `--disconnected-clusters [--min-size N]` | pairs of MOCs that share no member claims and no 1-hop cross-edges. Meta-MOCs (frontmatter `meta: true`) are excluded so they don't pollute the lonely-pair signal. |
 
 ### Mixed mode
 
@@ -68,6 +69,16 @@ A semantic query with a topology constraint, e.g. `/walk crystallisation --neigh
 - **Returning everything.** If the query is broad, narrow it: ask the user a clarifying question rather than dumping 100 hits.
 - **Phantom matches.** qmd may surface notes that match the query string but not the meaning. The *why-it-matched* annotation is a forcing function — if you can't articulate it, drop the hit.
 - **Stale topology.** Topology results depend on the on-disk graph state. If notes have been edited mid-session, the in-memory graph in `tools/topology.py` may be stale. Re-run if necessary.
+- **Reinventing the bridge-map.** When the user asks for "non-obvious cross-cluster connections" or similar, consult `notes/_cross-domain-bridges.md` *first* — its `## Wired bridges` section is the authoritative index of what's already been synthesised across clusters, and `## Open bridges` is the candidate list. Re-deriving bridges from semantic search is wasted work when the answer is already indexed.
+
+## Cross-cluster queries
+
+When the user asks about connections *between* clusters (not within one), the topology check is the right primitive:
+
+1. Run `--disconnected-clusters` to enumerate pairs the graph keeps separate.
+2. Read `notes/_cross-domain-bridges.md` to see which pairs already have an anchor synthesis (`## Wired bridges`) and which are candidates (`## Open bridges`).
+3. For wired pairs: surface the anchor synthesis with its bridge-character (substrate / dynamics / analogy / structural parallel / counter-example) — that vocabulary is the right register for cross-cluster answers.
+4. For candidates the user wants to wire: produce a proposed synthesis claim with `composed_from` listing source claims on each side. `/walk` proposes; `/connect` wires.
 
 ## Output
 
