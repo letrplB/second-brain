@@ -22,7 +22,7 @@ Surrender system (opt-in via `surrender.enabled` in `vault.yaml`, default off):
 | Verb | What |
 |---|---|
 | `/no-surrender` | probe user grip on a claim across mechanism / implications / falsifiability / bounds; updates engagement vector with FSRS-inspired decay |
-| `/teach` | (v2) Socratic teaching on identified engagement gaps; does NOT write engagement |
+| `/teach` | Socratic teaching on identified gaps (3–5 prompts per session, 30% revelation cap). Does NOT write engagement — no-write contract enforced at the tool-allowlist level. |
 
 ## What it is not
 

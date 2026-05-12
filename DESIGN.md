@@ -75,7 +75,7 @@ Nine active + one reserved:
 | `/anneal` | composite | methodology-coach pass on recent work; explicit, never proactive |
 | `/dream` | composite | model surfaces connections / patterns / questions from recent activity to inbox |
 | `/no-surrender` | primitive (gated) | probe user grip on a claim across mechanism / implications / falsifiability / bounds; updates engagement vector |
-| `/teach` | composite (gated, v2) | Socratic teaching on identified engagement gaps; pedagogical sibling to `/no-surrender`; does NOT write engagement |
+| `/teach` | composite (gated) | Socratic teaching on identified engagement gaps; pedagogical sibling to `/no-surrender`; does NOT write engagement (no-write contract enforced at the tool-allowlist level) |
 
 Detailed specs in each `skills/<verb>/SKILL.md`.
 

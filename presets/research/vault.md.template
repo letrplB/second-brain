@@ -15,7 +15,7 @@ CLAUDE.md (alongside this file) holds session-start instructions; the rest of th
 | `/learn <source>` | full ingestion: extract → connect → audit. `--deep` parallelises per-claim. |
 | `/anneal --scope=...` | methodology coach pass; flag drift, suggest fixes, optionally commit. |
 | `/no-surrender <target>` | **gated by `surrender.enabled` in `vault.yaml`.** Probe the user's grip on a claim across mechanism / implications / falsifiability / bounds. Updates the `engagement` vector. v1 cooperative-mode only. The only verb that writes engagement. |
-| `/teach <target>` | **v2 — not yet built.** Pedagogical companion to `/no-surrender`. Builds engagement via Socratic prompts; does NOT write engagement. |
+| `/teach <target>` | **gated by `surrender.enabled`.** Pedagogical companion to `/no-surrender`. Socratic prompts on identified gaps (3–5 per session, 30% revelation cap). Does NOT write engagement — architecturally enforced (no Edit tool in allowed-tools). Suggests `/no-surrender` at end. |
 | `/init` | scaffold a new vault. (Used once.) |
 
 Composition is implicit: when you `/learn`, the model orchestrates extract → connect → audit. When you `/extract` alone, only mechanical extraction happens.
