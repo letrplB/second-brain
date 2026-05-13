@@ -106,6 +106,25 @@ Pick a vault location and scaffold it:
 
 `/init` is guided by default (asks for vault path, preset, options). For a one-liner: `/init research --at ~/vault` (or `personal`).
 
+### Updating
+
+This plugin is evolving — verbs and conventions change as the design is sharpened by use. Pull updates regularly.
+
+**Marketplace install:**
+
+```
+/plugin marketplace update second-brain
+/plugin update second-brain@second-brain
+```
+
+Then restart Claude Code (the update step prints a `restart required to apply` reminder).
+
+Step 1 re-pulls the latest `marketplace.json` from GitHub. Step 2 fetches the new plugin code based on the refreshed registry — Claude Code tracks the install by git commit SHA, so new commits on `main` are picked up even without a version bump.
+
+To refresh *all* marketplaces at once: `/plugin marketplace update` (no name).
+
+**Clone-local install:** `git pull` in the cloned directory. Claude Code re-reads the skill files on next reload — no plugin update command needed since the marketplace source is your local path.
+
 ## Walking the graph
 
 Atoms are claims. Titles are prose propositions. Bodies are 150–400 words with inline `[[wikilinks]]` carrying surrounding prose. MOCs are leading-underscore files with bidirectional links to their members. Frontmatter is the contract; `description` is the model's first triage signal when deciding whether to follow a link.
