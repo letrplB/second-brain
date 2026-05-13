@@ -1,7 +1,7 @@
 {
   "name": "second-brain",
   "version": "0.1.0",
-  "description": "A graph of atomic claims that LLMs walk natively as semantic engines. Seven verbs over a flat notes folder. No queues, no phase machines, no invisible hooks.",
+  "description": "A graph of atomic claims that LLMs walk natively as semantic engines. Eight core verbs (extract, connect, walk, audit, learn, init, anneal, dream) plus an opt-in surrender system (no-surrender, teach). No queues, no phase machines, no invisible hooks.",
   "author": {
     "name": "bastian beitzinger"
   },

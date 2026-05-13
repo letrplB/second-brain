@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "second-brain",
-      "description": "Seven verbs over a flat notes folder: extract, connect, walk, audit, learn, init, anneal. No queues, no phase machines, no invisible hooks.",
+      "description": "Eight core verbs over a flat notes folder — extract, connect, walk, audit, learn, init, anneal, dream — plus an opt-in surrender system (no-surrender, teach). No queues, no phase machines, no invisible hooks.",
       "version": "0.1.0",
       "source": "./",
       "strict": false,

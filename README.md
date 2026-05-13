@@ -2,6 +2,8 @@
 
 A Claude Code plugin for personal knowledge graphs that **LLMs walk natively as semantic engines**.
 
+> **Status: evolving — always work in progress.** Verbs, conventions, and presets change as the design is sharpened by use. Pull regularly (`/plugin marketplace update second-brain` or `git pull` if you cloned locally) and skim recent commits for breaking changes before relying on a workflow. Pin a commit if you need stability.
+
 ## What
 
 A small set of orthogonal verbs operating on a directory of atomic markdown notes:
@@ -51,10 +53,13 @@ second-brain/
 │   ├── extract/SKILL.md
 │   ├── connect/SKILL.md
 │   ├── walk/{SKILL.md, tools/topology.py}
-│   ├── audit/{SKILL.md, tools/schema-check.py, tools/link-check.sh}
+│   ├── audit/{SKILL.md, tools/schema-check.py, tools/link-check.sh, tools/health-metrics.py}
 │   ├── learn/SKILL.md
 │   ├── init/SKILL.md
-│   └── anneal/SKILL.md
+│   ├── anneal/SKILL.md
+│   ├── dream/SKILL.md
+│   ├── no-surrender/{SKILL.md, probes.md}
+│   └── teach/{SKILL.md, pedagogy.md}
 └── reference/
     ├── methodology.md            # editorial conventions
     ├── empirical-grounding/      # ~60 PKM/cognition notes (consulted on demand)
@@ -63,9 +68,43 @@ second-brain/
 
 ## Install
 
-(WIP — install instructions land when the plugin packs into a marketplace bundle.)
+Two paths — pick one.
 
-For local development: this directory is the plugin source. Point Claude Code at `second-brain/` as a custom plugin directory; skills auto-discover from `skills/<name>/SKILL.md`.
+### A. From the marketplace (recommended)
+
+Inside Claude Code:
+
+```
+/plugin marketplace add letrplB/second-brain
+/plugin install second-brain@second-brain
+```
+
+The first command registers this repo as a marketplace; the second installs the `second-brain` plugin from it. Both verbs (`/extract`, `/walk`, …) and presets become available immediately. Update later with `/plugin marketplace update second-brain`.
+
+### B. Clone locally (for development or pinned versions)
+
+```bash
+git clone https://github.com/letrplB/second-brain.git ~/Code/second-brain
+```
+
+Then in Claude Code:
+
+```
+/plugin marketplace add ~/Code/second-brain
+/plugin install second-brain@second-brain
+```
+
+Skills auto-discover from `skills/<name>/SKILL.md`. Edit files in the cloned directory and reload — no rebuild step.
+
+### After install
+
+Pick a vault location and scaffold it:
+
+```
+/init
+```
+
+`/init` is guided by default (asks for vault path, preset, options). For a one-liner: `/init research --at ~/vault` (or `personal`).
 
 ## Walking the graph
 
